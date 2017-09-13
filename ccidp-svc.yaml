@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ccidp
+  name: ccidp-service
+spec:
+  selector:
+    app: shibboleth
+  ports:
+    - port: 80
+      targetPort: 8080

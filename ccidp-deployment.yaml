@@ -1,0 +1,45 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: ccidp-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: shibboleth
+    spec:
+      containers:
+      - name: idp
+        image: localhost:5000/shibboleth-idp:latest
+        resources:
+          limits:
+            cpu: 500m
+            memory: 500Mi
+        ports:
+        - containerPort: 8080
+        env:
+        - name: JETTY_MAX_HEAP
+          value: 64m
+        - name: JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ccidp-keystore
+              key: JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD
+        volumeMounts:
+        - name: credentials
+          mountPath: /opt/shibboleth-idp/credentials
+        - name: secrets
+          mountPath: /opt/shibboleth-idp/ext-conf
+        - name: metadata
+          mountPath: /opt/shibboleth-idp/metadata
+      volumes:
+        - name: credentials
+          secret:
+            secretName: idp-keys
+        - name: secrets
+          secret:
+            secretName: idp-secrets
+        - name: metadata
+          configMap:
+            name: ccidp-metadata
