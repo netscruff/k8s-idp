@@ -5,6 +5,7 @@ metadata:
     app: ccidp
   name: ccidp-service
 spec:
+  sessionAffinity: "ClientIP"
   selector:
     app: shibboleth
   ports:

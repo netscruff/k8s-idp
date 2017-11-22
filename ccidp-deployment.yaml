@@ -2,6 +2,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: ccidp-deployment
+  namespace: aai-prod
 spec:
   replicas: 1
   template:
@@ -11,16 +12,16 @@ spec:
     spec:
       containers:
       - name: idp
-        image: localhost:5000/shibboleth-idp:latest
+        image: registry.mit.c3.ca/shibboleth-idp:3.3.2
         resources:
           limits:
             cpu: 500m
-            memory: 500Mi
+            memory: 3000Mi
         ports:
         - containerPort: 8080
         env:
         - name: JETTY_MAX_HEAP
-          value: 64m
+          value: 2048m
         - name: JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -33,6 +34,10 @@ spec:
           mountPath: /opt/shibboleth-idp/ext-conf
         - name: metadata
           mountPath: /opt/shibboleth-idp/metadata
+        - name: idp-conf
+          mountPath: /opt/idp-conf
+        - name: idp-messages
+          mountPath: /opt/shibboleth-idp/messages
       volumes:
         - name: credentials
           secret:
@@ -42,4 +47,10 @@ spec:
             secretName: idp-secrets
         - name: metadata
           configMap:
-            name: ccidp-metadata
+            name: ccidp-metadata-v4
+        - name: idp-conf
+          configMap:
+            name: ccidp-conf-v9
+        - name: idp-messages
+          configMap:
+            name: ccidp-messages
