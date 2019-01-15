@@ -1,0 +1,21 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: idp.computecanada.ca
+  namespace: aai-prod
+spec:
+  secretName: ccidp-browser-tls
+  issuerRef:
+    name: letsencrypt-prod
+  dnsNames:
+    - idp.computecanada.ca
+  issuerRef:
+    name: letsencrypt-prod
+    kind: Issuer
+  commonName: 'idp.computecanada.ca'
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - idp.computecanada.ca
